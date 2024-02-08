@@ -1,5 +1,5 @@
 ---
-title: "Homework_3"
+title: "Homework 3"
 author: "Ben Lovelace"
 date: "BRL979"
 output:
@@ -21,15 +21,16 @@ library(mosaic)
 library(kableExtra)
 ```
 
+[Github Link](https://github.com/ben-lovelace/SDS315-HW-3)
 
-***
+------------------------------------------------------------------------
 
 # **Question 1:**
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 cre<-read.csv("creatinine.csv")
 ggplot(cre,aes(x=age,y=creatclear)) + 
-  geom_point(pch=20) +
+  geom_point(pch=20,color="indianred4") +
   geom_smooth(method="lm")
 model_cre <- lm(creatclear ~ age, data=cre)
 ```
@@ -42,10 +43,10 @@ cre55<-predict(model_cre,newdata=cre55set)
 cre55
 ```
 
-I used a linear regression to model the relationship between a patient's age and 
-creatine clearance rate. Then I subset the entire creatinine data set to just the patients aged 55 and used the predict function on the model to get that a 55 year old should have a creatinine clearance rate of `r round(cre55,2)`
+I used a linear regression to model the relationship between a patient's age and creatine clearance rate. Then I subset the entire creatinine data set to just the patients aged 55 and used the predict function on the model to get that a 55 year old should have a creatinine clearance rate of `r round(cre55,2)`
 
 ### **Part B:**
+
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 cre_slope<-coef(model_cre)
 cre_slope<-cre_slope[2]
@@ -54,6 +55,7 @@ cre_slope<-cre_slope[2]
 The linear regressions model demonstrates that for every year a subject aged, the creatinine clearance rate decreases by about `r cre_slope` which I determined by pulling the coefficients of the linear regression model, which shows the slope.
 
 ### **Part C:**
+
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 cre40set <- cre[cre$age==39,]
 cre40set <- mutate(cre40set, age=age+1)
@@ -71,9 +73,9 @@ resid60<-resid60[1]
 resid60
 ```
 
-A 40 year old with a creatinine clearance rate of 135 is healthier than a 60 year old with a creatinine clearance rate of 112, as the difference between the predicted creatinine clearance rate and the actual (135 or 112), is larger for the 40 year old than the 60 year old. In other words 135 - `r round(cre40,2)` = `r round(resid40,2)` > 112 - `r round(cre60[1],2)` = `r round(resid60[1],2)`.
+A 40 year old with a creatinine clearance rate of 135 is healthier than a 60 year old with a creatinine clearance rate of 112, as the difference between the predicted creatinine clearance rate and the actual (135 or 112), is larger for the 40 year old than the 60 year old. In other words 135 - `r round(cre40,2)` = `r round(resid40,2)` \> 112 - `r round(cre60[1],2)` = `r round(resid60[1],2)`.
 
-***
+------------------------------------------------------------------------
 
 # **Question 2:**
 
@@ -134,7 +136,7 @@ This table gives the ticker symbol for the individual stock (from left to right 
 
 The stock with the lowest systematic risk is AAPL (Apple), as it has the smallest slope value, meaning the smallest Beta value. The stock with the highest systematic risk, on the other hand, is JNJ (Johnson and Johnson) as it has the larget slope value, meaning the largest Beta value.
 
-***
+------------------------------------------------------------------------
 
 # **Question 3:**
 
@@ -166,14 +168,16 @@ kab<-kable(covid_table)
 kable_classic_2(kab)  
 ```
 
-***
+------------------------------------------------------------------------
 
 # **Question 4:**
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 milk<-read.csv("milk.csv")
-ggplot(milk) +
-  geom_point(aes(x=log(price),y=log(sales)))
+ggplot(milk,aes(x=log(price),y=log(sales))) +
+  geom_point(color="navy",pch=20) +
+  geom_smooth(method="lm")
+ 
 lm_milk = lm(log(sales) ~ log(price), data=milk)
 elasticity<-round(coef(lm_milk)[2],2)
 ```
