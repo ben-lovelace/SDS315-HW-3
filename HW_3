@@ -1,0 +1,181 @@
+---
+title: "Homework_3"
+author: "Ben Lovelace"
+date: "BRL979"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.height=3, fig.width=4, warning=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60))
+```
+
+```{r include=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(mosaic)
+library(kableExtra)
+```
+
+
+***
+
+# **Question 1:**
+
+```{r echo=FALSE}
+cre<-read.csv("creatinine.csv")
+ggplot(cre,aes(x=age,y=creatclear)) + 
+  geom_point(pch=20) +
+  geom_smooth(method="lm")
+model_cre <- lm(creatclear ~ age, data=cre)
+```
+
+### **Part A:**
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+cre55set <- cre[cre$age==55,]
+cre55<-predict(model_cre,newdata=cre55set)
+cre55
+```
+
+I used a linear regression to model the relationship between a patient's age and 
+creatine clearance rate. Then I subset the entire creatinine data set to just the patients aged 55 and used the predict function on the model to get that a 55 year old should have a creatinine clearance rate of `r round(cre55,2)`
+
+### **Part B:**
+```{r message=FALSE, warning=FALSE, include=FALSE}
+cre_slope<-coef(model_cre)
+cre_slope<-cre_slope[2]
+```
+
+The linear regressions model demonstrates that for every year a subject aged, the creatinine clearance rate decreases by about `r cre_slope` which I determined by pulling the coefficients of the linear regression model, which shows the slope.
+
+### **Part C:**
+```{r message=FALSE, warning=FALSE, include=FALSE}
+cre40set <- cre[cre$age==39,]
+cre40set <- mutate(cre40set, age=age+1)
+cre40<-predict(model_cre,newdata=cre40set)
+cre40
+
+cre60set <- cre[cre$age==60,]
+cre60<-predict(model_cre,newdata=cre60set)
+cre60
+
+resid40 <- 135 - cre40
+resid40
+resid60<- 112 - cre60
+resid60<-resid60[1]
+resid60
+```
+
+A 40 year old with a creatinine clearance rate of 135 is healthier than a 60 year old with a creatinine clearance rate of 112, as the difference between the predicted creatinine clearance rate and the actual (135 or 112), is larger for the 40 year old than the 60 year old. In other words 135 - `r round(cre40,2)` = `r round(resid40,2)` > 112 - `r round(cre60[1],2)` = `r round(resid60[1],2)`.
+
+***
+
+# **Question 2:**
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+market<-read.csv("marketmodel.csv")
+```
+
+Beta is the percentage change in the stocks return value for a 1% change in the market portfolio. As such, the beta of a stock is used as a measure of the systematic risk of a firm. A higher beta value means larger change in correlation with market changes, meaning that stocks with high betas have high risk. Both positive and negative betas are possible. A negative beta means that it has a negative risk premium, which means that it will do really well if the market is not. They are often used as insurance. You can calculate the beta by dividing the covariance, which measures how much the returns of a stock are related to the returns of the market, by the variance, which measures the overall volatility of the market.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+model_aapl <- lm(SPY ~ AAPL, data=market)
+rss_aapl<-rsquared(model_aapl)
+intercept_aapl<-coef(model_aapl)[1]
+slope_aapl<-coef(model_aapl)[2]
+
+model_goog <- lm(SPY ~ GOOG, data=market)
+rss_goog<-rsquared(model_goog)
+intercept_goog<-coef(model_goog)[1]
+slope_goog<-coef(model_goog)[2]
+
+model_jnj <- lm(SPY ~ JNJ, data=market)
+rss_jnj<-rsquared(model_jnj)
+intercept_jnj<-coef(model_jnj)[1]
+slope_jnj<-coef(model_jnj)[2]
+
+model_mrk <- lm(SPY ~ MRK, data=market)
+rss_mrk<-rsquared(model_mrk)
+intercept_mrk<-coef(model_mrk)[1]
+slope_mrk<-coef(model_mrk)[2]
+
+model_wmt <- lm(SPY ~ WMT, data=market)
+rss_wmt<-rsquared(model_wmt)
+intercept_wmt<-coef(model_wmt)[1]
+slope_wmt<-coef(model_wmt)[2]
+
+model_tgt <- lm(SPY ~ TGT, data=market)
+rss_tgt<-rsquared(model_tgt)
+intercept_tgt<-coef(model_tgt)[1]
+slope_tgt<-coef(model_tgt)[2]
+
+market_table = tribble(
+   ~Ticker, ~Intercept, ~Slope, ~R_Squared,
+   "AAPL", intercept_aapl, slope_aapl, rss_aapl,
+   "GOOG", intercept_goog, slope_goog, rss_goog,
+   "JNJ", intercept_jnj, slope_jnj, rss_jnj,
+   "MRK", intercept_mrk, slope_mrk, rss_mrk,
+   "TGT", intercept_tgt, slope_tgt, rss_tgt,
+   "WMT", intercept_wmt, slope_wmt, rss_wmt
+  )
+
+kab<-kable(market_table)
+kable_classic_2(kab)
+```
+
+This table gives the ticker symbol for the individual stock (from left to right Apple, Google, Johnson and Johnson, Merck, Target, and Walmart). It also gives the intercept and slope of the linear model used to represent the stocks' correlation with S&P 500's returns, and the r-squared value for the linear models.
+
+### **Conclusion:**
+
+The stock with the lowest systematic risk is AAPL (Apple), as it has the smallest slope value, meaning the smallest Beta value. The stock with the highest systematic risk, on the other hand, is JNJ (Johnson and Johnson) as it has the larget slope value, meaning the largest Beta value.
+
+***
+
+# **Question 3:**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+covid <- read.csv("covid.csv")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(covid) + 
+  geom_line(aes(x=days_since_first_death,y=log(deaths),col=country))
+
+covid_spain <- filter(covid, country=="Spain")
+lm_spain <- lm(log(deaths)~days_since_first_death,data=covid_spain)
+spain_gr<-coef(lm_spain)[2]
+spain_dt<-70/(spain_gr*100)
+
+covid_italy <- filter(covid, country=="Italy")
+lm_italy <- lm(log(deaths)~days_since_first_death,data=covid_italy)
+italy_gr<-coef(lm_italy)[2]
+italy_dt<-70/(italy_gr*100)
+
+covid_table = tribble(
+  ~Country, ~Growth_Rate, ~Doubling_Time,
+  "Spain", round(spain_gr,3), round(spain_dt,0),
+  "Italy", round(italy_gr,3), round(italy_dt,0)
+)
+
+kab<-kable(covid_table)
+kable_classic_2(kab)  
+```
+
+***
+
+# **Question 4:**
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+milk<-read.csv("milk.csv")
+ggplot(milk) +
+  geom_point(aes(x=log(price),y=log(sales)))
+lm_milk = lm(log(sales) ~ log(price), data=milk)
+elasticity<-round(coef(lm_milk)[2],2)
+```
+
+The price elasticity of demand of milk is `r elasticity`. I found this by finding the coefficient of a power law model of the dataset.
