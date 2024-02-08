@@ -3,11 +3,11 @@ title: "Homework 3"
 author: "Ben Lovelace"
 date: "BRL979"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     toc: yes
     toc_float: yes
-  pdf_document:
-    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -19,6 +19,7 @@ library(ggplot2)
 library(tidyverse)
 library(mosaic)
 library(kableExtra)
+library(tinytex)
 ```
 
 [Github Link](https://github.com/ben-lovelace/SDS315-HW-3)
@@ -127,7 +128,8 @@ market_table = tribble(
   )
 
 kab<-kable(market_table)
-kable_classic_2(kab)
+kable_classic_2(kab) %>%
+  kable_styling(latex_options = c("hold_position"))
 ```
 
 This table gives the ticker symbol for the individual stock (from left to right Apple, Google, Johnson and Johnson, Merck, Target, and Walmart). It also gives the intercept and slope of the linear model used to represent the stocks' correlation with S&P 500's returns, and the r-squared value for the linear models.
@@ -165,7 +167,9 @@ covid_table = tribble(
 )
 
 kab<-kable(covid_table)
-kable_classic_2(kab)  
+kable_classic_2(kab) %>%
+  kable_styling(latex_options = c("hold_position"))
+  
 ```
 
 ------------------------------------------------------------------------
